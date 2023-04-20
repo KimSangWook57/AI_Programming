@@ -1,6 +1,9 @@
 import random
-# 내가 직접 작성하기
-# 읽기 좋게 쓰기
+
+
+DELTA = 0.01
+eval_count = 0
+
 
 def create_problem(filename):
     f = open(filename, "r")
@@ -28,12 +31,29 @@ def random_init(p):
 
 
 def evaluate(current, p):
+    global eval_count
+    eval_count += 1
     expr = p[0]
     var_names = p[1][0]
     for i in range(len(var_names)):
         assignment = var_names[i] + "=" + str(current[i])
         exec(assignment)
     return eval(expr)
+
+
+def mutate(current, i, d, p):
+    current_copy = current[:]
+    domain = p[1]
+    low = domain[1][i]
+    up = domain[2][i]
+    if low <= (current_copy[i] + d) <= up:
+        current_copy[i] += d
+    return current_copy
+
+
+def coordinate(solution):
+    c = [round(value, 3) for value in solution]
+    return tuple(c)
 
 
 def describe_problem(p):
@@ -45,31 +65,21 @@ def describe_problem(p):
     low = p[1][1]
     up = p[1][2]
     for i in range(len(low)):
-        print(f" {var_names[i]} : {low[i], up[i]}")
+        print(f"{var_names[i]} : {low[i], up[i]}")
 
 
 def display_result(solution, minimum):
     print()
     print("Solution found:")
-    print(coordinate(solution))  # Convert list to tuple
-    print("Minimum value: {0:,.3f}".format(minimum))
+    print(coordinate(solution))
+    print(f"Minimum value: {minimum:,.3f}")
     print()
-    print("Total number of evaluations: {0:,}".format(NumEval))
-
-
-def coordinate(solution):
-    c = [round(value, 3) for value in solution]
-    return tuple(c)
+    print(f"Total number of evaluations: {eval_count:,}")
 
 
 if __name__ == "__main__":
-    # 문제 인스턴스 생성
     p = create_problem("./data/Convex.txt")
-    # 문제 인스턴스 출력
-    describe_problem(p)
-    # 초기 솔루션 생성
     solution = random_init(p)
-    # 솔루션에 대한 문제평가
     minimum = evaluate(solution, p)
-    # 가장 작은 값을 표시
-    print(f"{minimum}")
+    describe_problem(p)
+    display_result(solution, minimum)
