@@ -17,8 +17,9 @@ from algo_info import ALGO_INFO, DIVIDERS
 # draw_line(x, y) => 값 반환하지 않음
 # draw_text(x, y) => 값 반환하지 않음
 def loop():
-    for i in ALGO_INFO:
-        print(i)
+    for i in range(len(ALGO_INFO)):
+        if ALGO_INFO[i]["depends"] == -1:
+            threads[i].run()
 
     while True:
         gfx.check_events()
@@ -48,7 +49,7 @@ def loop():
 pygame.init()
 surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), 0, 32)
 font = pygame.font.SysFont("Consolas", FONT_HEIGHT)
-cities = make_cities(20)
+cities = make_cities(5)
 list_of_cities_list = []
 sim = []
 threads = []
